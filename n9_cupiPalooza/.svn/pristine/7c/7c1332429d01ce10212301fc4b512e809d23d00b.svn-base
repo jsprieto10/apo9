@@ -1,0 +1,82 @@
+/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Universidad de los Andes (Bogotá - Colombia)
+ * Departamento de Ingeniería de Sistemas y Computación 
+ * Licenciado bajo el esquema Academic Free License version 2.1 
+ *
+ * Proyecto Cupi2 (http://cupi2.uniandes.edu.co)
+ * Ejercicio: n9_cupiPalooza
+ * Autor: Equipo Cupi2 2017
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+ */
+package uniandes.cupi2.cupiPalooza.mundo;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+
+/**
+ * Esta excepción se lanza cuando se presenta un error al intentar agregar una banda o un escenario con un patrocinador que ya existe. <br>
+ */
+@SuppressWarnings("serial")
+public class ElementoExistenteException extends Exception
+{
+    // -----------------------------------------------------------------
+    // Constantes
+    // -----------------------------------------------------------------
+
+    /**
+     * Arreglo de constantes de los tipos de elemento repetidos que puede haber.
+     */
+    public final static String[] TIPOS = {"Patrocinador", "Banda" };
+
+
+    // -----------------------------------------------------------------
+    // Atributos
+    // -----------------------------------------------------------------
+
+    /**
+     * Tipo de elemento que se encontró repetido, indica si fue una banda o un patrocinador.
+     */
+    private String tipoRepetido;
+
+    /**
+     * Nombre que se encontró repetido y por lo tanto infringue en las restricciones del festival.
+     */
+    private String nombreRepetido;
+
+    // -----------------------------------------------------------------
+    // Constructor
+    // -----------------------------------------------------------------
+
+    /**
+     * Construye la excepción con el mensaje que se pasa como parámetro y que describe la causa del problema
+     * @param pTipo El tipo de entidad que se encontró repetida. pTipo == BANDA || pTipo == PATROCINADOR
+     * @param pNombre Nombre que se intentó duplicar.
+     */
+    public ElementoExistenteException( String pTipo, String pNombre )
+    {
+        super( ( pTipo.equals( TIPOS[1] ) ) ? "Ya existe una banda por este nombre." : "Este patrocinador ya está asignado a un escenario." );
+        nombreRepetido = pNombre;
+        escribirLog( );
+    }
+
+    /**
+     * Añade los detalles de la excepción al reporte.
+     */
+    public void escribirLog( )
+    {
+        try
+        {
+            PrintWriter out = new PrintWriter( new BufferedWriter( new FileWriter( "./data/reporteExcepciones.txt", true ) ) );
+            Date fecha = new Date( );
+            out.println( fecha.toString( ) + " - Elemento Repetido: " + tipoRepetido + " " + nombreRepetido + " ya existe." );
+            out.close( );
+        }
+        catch( IOException e )
+        {
+
+        }
+    }
+}

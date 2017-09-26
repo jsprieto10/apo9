@@ -1,0 +1,59 @@
+/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Universidad de los Andes (Bogotá - Colombia)
+ * Departamento de Ingeniería de Sistemas y Computación 
+ * Licenciado bajo el esquema Academic Free License version 2.1 
+ *
+ * Proyecto Cupi2 (http://cupi2.uniandes.edu.co)
+ * Ejercicio: n9_cupiPalooza
+ * Autor: Equipo Cupi2 2017
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+ */
+package uniandes.cupi2.cupiPalooza.mundo;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+
+/**
+ * Esta excepción se lanza cuando se presenta un error al leer o escribir el archivo con la información del estado del modelo del mundo. <br>
+ */
+@SuppressWarnings("serial")
+public class PersistenciaException extends Exception
+{
+
+    // -----------------------------------------------------------------
+    // Constructor
+    // -----------------------------------------------------------------
+
+    /**
+     * Construye la excepción con el mensaje que se pasa como parámetro y que describe la causa del problema
+     * @param pCausa Mensaje que describe el problema. pCausa != null && pCausa != "".
+     */
+    public PersistenciaException( String pCausa )
+    {
+        super( pCausa );
+        escribirLog( pCausa );
+    }
+
+    /**
+     * Añade los detalles de la excepción al reporte.
+     * @param pCausa Mensaje que describe el problema. pCausa != null && pCausa != "".
+     */
+    public void escribirLog( String pCausa )
+    {
+        try
+        {
+            PrintWriter out = new PrintWriter( new BufferedWriter( new FileWriter( "./data/reporteExcepciones.txt", true ) ) );
+            Date fecha = new Date( );
+            out.println( fecha.toString( ) + " - Error en la persistencia." );
+            out.close( );
+        }
+        catch( IOException e )
+        {
+
+        }
+    }
+
+}

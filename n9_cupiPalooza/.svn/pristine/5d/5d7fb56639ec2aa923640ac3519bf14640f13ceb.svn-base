@@ -1,0 +1,307 @@
+/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Universidad  de  los Andes   (Bogotá - Colombia)
+ * Departamento de  Ingeniería  de  Sistemas    y   Computación
+ * Licenciado   bajo    el  esquema Academic Free License versión 2.1
+ *      
+ * Proyecto Cupi2   (http://cupi2.uniandes.edu.co)
+ * Ejercicio: n9_cupiPalooza
+ * Autor: Equipo Cupi2 2017
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+package uniandes.cupi2.cupiPalooza.mundo;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * Banda que se presenta en el festival. <br>
+ * <b>inv: </b> <br>
+ * - El nombre no es vacío o nulo. <br>
+ * - La ruta de la imagen no vacía o nula. <br>
+ * - La cantidad de fans es mayor a 0. <br>
+ * - La cantidad de canciones es mayor a 0. <br>
+ * - El costo debe es mayor a 0. <br>
+ * - El horario de presentación debe ser entre el 3 y el 5 de septiembre.
+ */
+public class Banda implements Serializable
+{
+    // -----------------------------------------------------------------
+    // Atributos
+    // -----------------------------------------------------------------
+
+    /**
+     * Nombre de la banda.
+     */
+    private String nombre;
+
+    /**
+     * Cantidad de fans de la banda.
+     */
+    private int cantidadDeFans;
+
+    /**
+     * Cantidad de canciones en su repertorio.
+     */
+    private int cantidadDeCanciones;
+
+    /**
+     * Valor que se paga a la banda por presentarse en el festival.
+     */
+    private double costo;
+
+    /**
+     * Ruta de la imagen que representa a la banda.
+     */
+    private String rutaImagen;
+    
+    /**
+     * Anterior banda en la lista.
+     */
+    private Banda anterior;
+    
+    /**
+     * Siguiente banda en la lista.
+     */
+    private Banda siguiente;
+    
+    /**
+     * Fecha y hora en las cuales se presentará la banda.
+     */
+    private Date horarioPresentacion;
+
+    // -----------------------------------------------------------------
+    // Constructores
+    // -----------------------------------------------------------------
+
+    /**
+     * Crea una banda con la información recibida por parámetro. <br>
+     * <b> post: </b> Inicializó el nombre, la cantidad de fans, la cantidad de canciones, el costo, la fecha de presentacion y la ruta de la imagen con los valores recibidos por parámetro. <br>
+     * La banda anterior y la banda siguiente son nulas.
+     * @param pNombre Nombre de la banda. pNombre != null y pNombre != "".
+     * @param pCantidadDeFans Cantidad de fans que tiene la banda. pCantidadDeFans > 0.
+     * @param pCantidadDeCanciones Cantidad de canciones que tocará la banda. pCantidadDeCanciones > 0.
+     * @param pCosto Costo de la banda por tocar en un escenario. pCosto > 0.
+     * @param pHorario Fecha y hora de presentación. pFecha != null.
+     * @param pRutaImagen Ruta de la imagen descriptiva de la banda. pRutaImagen != null y pRutaImagen !="".
+     */
+    public Banda( String pNombre, int pCantidadDeFans, int pCantidadDeCanciones, double pCosto, Date pHorario, String pRutaImagen )
+    {
+        nombre = pNombre;
+        cantidadDeFans = pCantidadDeFans;
+        cantidadDeCanciones = pCantidadDeCanciones;
+        costo = pCosto;
+        rutaImagen = pRutaImagen;
+        horarioPresentacion = pHorario;
+        
+        siguiente = null;
+        anterior = null;
+
+        verificarInvariante( );
+    }
+
+    // -----------------------------------------------------------------
+    // Métodos
+    // -----------------------------------------------------------------
+
+    /**
+     * Retorna el nombre de la banda.
+     * @return Nombre de la banda.
+     */
+    public String darNombre( )
+    {
+        return nombre;
+    }
+
+    /**
+     * Retorna la cantidad de fans de la banda.
+     * @return Cantidad de fans de la banda.
+     */
+    public int darCantidadDeFans( )
+    {
+        return cantidadDeFans;
+    }
+
+    /**
+     * Retorna la cantidad de canciones de la banda.
+     * @return Cantidad de canciones de la banda.
+     */
+    public int darCantidadDeCanciones( )
+    {
+        return cantidadDeCanciones;
+    }
+
+    /**
+     * Retorna el valor que se paga a la banda por presentarse en el festival.
+     * @return Costo de la banda.
+     */
+    public double darCosto( )
+    {
+        return costo;
+    }
+
+    /**
+     * Retorna la imagen representativa de la banda.
+     * @return Ruta de la imagen de la banda.
+     */
+    public String darRutaImagen( )
+    {
+        return rutaImagen;
+    }
+    
+    /**
+     * Retorna la fecha y hora de presentación de la banda.
+     * @return Fecha y hora de presentación de la banda.
+     */
+    public Date darHorarioPresentacion( )
+    {
+        return horarioPresentacion;
+    }
+
+    /**
+     * Compara la banda actual y la banda recibida por parámetro por su nombre.
+     * @param pBanda Banda a comparar. pBanda != null && banda != "".
+     * @return 0 si tienen el mismo nombre, 1 si la banda recibida por parámetro es menor, -1 si es mayor.
+     */
+    public int compararPorNombre( Banda pBanda )
+    {
+        int comparacion = nombre.compareToIgnoreCase( pBanda.darNombre( ) );
+        if( comparacion > 0 )
+        {
+            comparacion = 1;
+        }
+        else if( comparacion < 0 )
+        {
+            comparacion = -1;
+        }
+        return comparacion;
+    }
+
+    /**
+     * Compara la banda actual y la banda recibida por parámetro por su cantidad de fans.
+     * @param pBanda Banda a comparar. pBanda != null && banda != "".
+     * @return 0 si tienen la misma cantidad de fans, 1 si la banda recibida por parámetro tiene una cantidad menor, -1 si tiene una cantidad mayor.
+     */
+    public int compararPorCantidadDeFans( Banda pBanda )
+    {
+        int comparacion = 0;
+        if( cantidadDeFans > pBanda.darCantidadDeFans( ) )
+        {
+            comparacion = 1;
+        }
+        else if( cantidadDeFans < pBanda.darCantidadDeFans( ) )
+        {
+            comparacion = -1;
+        }
+        return comparacion;
+    }
+
+    /**
+     * Compara la banda actual y la banda recibida por parámetro por su cantidad de canciones.
+     * @param pBanda Banda a comparar. pBanda != null && banda != "".
+     * @return 0 si tienen la misma cantidad de canciones, 1 si la banda recibida por parámetro tiene una cantidad menor, -1 si tiene una cantidad mayor.
+     */
+    public int compararPorCantidadDeCanciones( Banda pBanda )
+    {
+        int comparacion = 0;
+        if( cantidadDeCanciones > pBanda.darCantidadDeCanciones( ) )
+        {
+            comparacion = 1;
+        }
+        else if( cantidadDeCanciones < pBanda.darCantidadDeCanciones( ) )
+        {
+            comparacion = -1;
+        }
+        return comparacion;
+    }
+    
+    /**
+     * Compara la banda actual y la banda recibida por parámetro por su horario de presentación.
+     * @param pBanda Banda a comparar. pBanda != null && banda != "".
+     * @return 0 si tienen el mismo horario, 1 si la banda recibida por parámetro se presenta antes, -1 si se presenta después.
+     */
+    public int compararPorHorarioPresentacion( Banda pBanda )
+    {
+        int comparacion = 0;
+        if( horarioPresentacion.compareTo( pBanda.darHorarioPresentacion( ) ) > 0 )
+        {
+            comparacion = 1;
+        }
+        else if( horarioPresentacion.compareTo( pBanda.darHorarioPresentacion( ) ) < 0 )
+        {
+            comparacion = -1;
+        }
+        return comparacion;
+    }
+    
+    /**
+     * Retorna la anterior banda en la lista.
+     * @return Banda anterior.
+     */
+    public Banda darAnterior( )
+    {
+        return anterior;
+    }
+
+    /**
+     * Retorna la siguiente banda en la lista.
+     * @return Banda siguiente.
+     */
+    public Banda darSiguiente( )
+    {
+        return siguiente;
+    }
+
+    /**
+     * Cambia la anterior banda por la banda dada por parámetro. <br>
+     * <b> post: </b> Se cambió la banda anterior.
+     * @param pAnterior Banda a asignar como anterior.
+     */
+    public void cambiarAnterior( Banda pAnterior )
+    {
+        anterior = pAnterior;
+    }
+
+    /**
+     * Cambia la siguiente banda por la banda dada por parámetro.<br>
+     * <b> post: </b> Se cambió la banda siguiente.
+     * @param pSiguiente Banda a asignar como siguiente.
+     */
+    public void cambiarSiguiente( Banda pSiguiente )
+    {
+        siguiente = pSiguiente;
+    }
+
+    /**
+     * Retorna la cadena que representa la banda.
+     * @return <Nombre de la banda> - <fecha de presentación>
+     */
+    public String toString( )
+    {
+        return nombre + " - " + horarioPresentacion.toString( );
+    }
+
+    // -----------------------------------------------------------------
+    // Invariante
+    // -----------------------------------------------------------------
+
+    /**
+     * Verifica el invariante de la clase. <br>
+     * <b>inv </b> <br>
+     * - El nombre no es nulo ni vacío. <br>
+     * - La ruta de la imagen no es nulo o vacío. <br>
+     * - La cantidad de fans es mayor a 0. <br>
+     * - La cantidad de canciones es mayor a 0. <br>
+     * - El costo es mayor a 0.
+     */
+    private void verificarInvariante( )
+    {
+        assert ( nombre != null && !nombre.equals( "" ) ) : "El nombre no es válido.";
+        assert ( rutaImagen != null && !rutaImagen.equals( "" ) ) : "La ruta de la imagen no es válida.";
+        assert ( cantidadDeFans > 0 ) : "El costo debe ser superior a 0.";
+        assert ( cantidadDeCanciones > 0 ) : "El costo debe ser superior a 0.";
+        assert ( costo > 0 ) : "El costo debe ser superior a 0.";
+        
+    }
+
+}

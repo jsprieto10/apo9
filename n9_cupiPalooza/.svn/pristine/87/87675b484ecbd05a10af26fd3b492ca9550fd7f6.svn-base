@@ -1,0 +1,444 @@
+/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Universidad  de  los Andes   (Bogotá - Colombia)
+ * Departamento de  Ingeniería  de  Sistemas    y   Computación
+ * Licenciado   bajo    el  esquema Academic Free License versión 2.1
+ *      
+ * Proyecto Cupi2   (http://cupi2.uniandes.edu.co)
+ * Ejercicio: n9_cupiPalooza
+ * Autor: Equipo Cupi2 2017
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ */
+
+package uniandes.cupi2.cupiPalooza.mundo;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+
+/**
+ * Un escenario en el cual se presentarán las bandas del festival. <br>
+ * <b>inv: </b> <br>
+ * - bandas != null <br>
+ * - No se sobrepasa la cantidad máxima de bandas en el escenario. <br>
+ * - El presupuesto es un valor mayor o igual a 0. <br>
+ * - No hay dos bandas con el mismo nombre. <br>
+ * - No hay dos bandas con el mismo horario de presentación. <br>
+ * - No se sobrepasa el presupuesto del escenario. <br>
+ * - Las bandas deben estar ordenadas por su horario de presentación.
+ */
+
+public class Escenario implements Serializable
+{
+    // -----------------------------------------------------------------
+    // Constantes
+    // -----------------------------------------------------------------
+
+    /**
+     * Cantidad máxima de bandas que puede tener un escenario.
+     */
+    public final static int CANTIDAD_MAXIMA_BANDAS = 10;
+
+    // -----------------------------------------------------------------
+    // Atributos
+    // -----------------------------------------------------------------
+
+    /**
+     * Número representativo del escenario.
+     */
+    private int numero;
+
+    /**
+     * Patrocinador del escenario.
+     */
+    private String patrocinador;
+
+    /**
+     * Presupuesto disponible para las bandas.
+     */
+    private double presupuesto;
+
+    /**
+     * Primer elemento de la lista de bandas programadas para el escenario.
+     */
+    private Banda primeraBanda;
+
+    /**
+     * Siguiente escenario.
+     */
+    private Escenario siguiente;
+
+    // -----------------------------------------------------------------
+    // Constructores
+    // -----------------------------------------------------------------
+
+    /**
+     * Crea un escenario con la información recibida por parámetro.<br>
+     * <b>post:</b> El escenario se inicializó con el número, el patrocinador y el presupuesto dados.<br>
+     * La primera banda y el escenario siguiente son nulos.
+     * @param pNumero Número del escenario. pNumero > 0 && pNumero <= CANTIDAD_MAXIMA_BANDAS.
+     * @param pPatrocinador Nombre del patrocinador. pPatrocinador != null && pPatrocinador != "".
+     * @param pPresupuesto Presupuesto para el escenario. pPresupuesto > 0.
+     */
+    public Escenario( int pNumero, String pPatrocinador, double pPresupuesto )
+    {
+        numero = pNumero;
+        patrocinador = pPatrocinador;
+        presupuesto = pPresupuesto;
+        primeraBanda = null;
+
+        verificarInvariante( );
+    }
+
+    // -----------------------------------------------------------------
+    // Métodos
+    // -----------------------------------------------------------------
+
+    /**
+     * Retorna la primera banda del escenario.
+     * @return La primera banda.
+     */
+    public Banda darPrimeraBanda( )
+    {
+        return primeraBanda;
+    }
+
+    /**
+     * Retorna el número que identifica al escenario.
+     * @return Número del escenario.
+     */
+    public int darNumero( )
+    {
+        return numero;
+    }
+
+    /**
+     * Retorna el nombre del patrocinador del escenario.
+     * @return Nombre del patrocinador del escenario.
+     */
+    public String darPatrocinador( )
+    {
+        return patrocinador;
+    }
+
+    /**
+     * Retorna el presupuesto del escenario.
+     * @return Presupuesto del escenario.
+     */
+    public double darPresupuesto( )
+    {
+        return presupuesto;
+    }
+
+    /**
+     * Calcula el costo total de todas las bandas que se presentan en el escenario.
+     * @return Costo acumulado actual.
+     */
+    public double darCostoAcumulado( )
+    {
+        double costoActual = 0;
+        Banda actual = primeraBanda;
+        while( actual != null )
+        {
+            costoActual += actual.darCosto( );
+            actual = actual.darSiguiente( );
+        }
+        return costoActual;
+    }
+
+    /**
+     * Calcula la cantidad de bandas que se presentan en el escenario.
+     * @return Cantidad de bandas actual.
+     */
+    public int darCantidadBandas( )
+    {
+        int cantidadBandas = 0;
+        Banda actual = primeraBanda;
+        while( actual != null )
+        {
+            cantidadBandas++;
+            actual = actual.darSiguiente( );
+        }
+        return cantidadBandas;
+    }
+
+    /**
+     * Retorna el siguiente escenario en la lista.
+     * @return Banda siguiente.
+     */
+    public Escenario darSiguiente( )
+    {
+        return siguiente;
+    }
+
+    /**
+     * Cambia el siguiente escenario por el escenario dado por parámetro.<br>
+     * <b> post: </b> Se cambió el escenario siguiente.
+     * @param pSiguiente Escenario a asignar como siguiente.
+     */
+    public void cambiarSiguiente( Escenario pSiguiente )
+    {
+        siguiente = pSiguiente;
+    }
+
+    /**
+     * Agrega una banda al escenario. <br>
+     * <b>post:</b> Se agregó a la lista encadenada de bandas una nueva banda con las características recibidas por parámetro, <br>
+     * respetando el orden de horario de presentación en la lista.
+     * @param pNombre Nombre de la banda a agregar. pNombre != null && pNombre != "".
+     * @param pCantidadDeFans Cantidad de fans que tiene la banda. pCantidadDeFans > 0.
+     * @param pCantidadDeCanciones Cantidad de canciones que tocará la banda. pCantidadDeCanciones > 0.
+     * @param pCosto Costo de la banda por presentarse en un escenario. pCosto > 0.
+     * @param pRutaImagen Ruta de la imagen descriptiva de la banda. pRutaImagen != null && pRutaImagen != "".
+     * @param pFecha Fecha y hora de presentación. pFecha != null.
+     * @throws ElementoExistenteException Si ya existe una banda con el nombre dado por parámetro.
+     * @throws CupoMaximoException Si el escenario ha alcanzado el límite de bandas en su repertorio, si no hay presupuesto disponible para costear esta banda o si el horario
+     *         de presentación deseado no se encuentra disponible.
+     */
+    public void agregarBanda( String pNombre, int pCantidadDeFans, int pCantidadDeCanciones, double pCosto, Date pFecha, String pRutaImagen ) throws ElementoExistenteException, CupoMaximoException
+    {
+        if( buscarPorNombre( pNombre ) != null )
+        {
+            throw new ElementoExistenteException( ElementoExistenteException.TIPOS[ 1 ], pNombre );
+        }
+        else if( buscarPorHorario( pFecha ) != null )
+        {
+            throw new CupoMaximoException( CupoMaximoException.ELEMENTOS[ 1 ], CupoMaximoException.LIMITES[ 2 ] );
+        }
+        else if( darCostoAcumulado( ) + pCosto > presupuesto )
+        {
+            throw new CupoMaximoException( CupoMaximoException.ELEMENTOS[ 1 ], CupoMaximoException.LIMITES[ 0 ] );
+        }
+        else if( darCantidadBandas( ) + 1 > CANTIDAD_MAXIMA_BANDAS )
+        {
+            throw new CupoMaximoException( CupoMaximoException.ELEMENTOS[ 1 ], CupoMaximoException.LIMITES[ 1 ] );
+        }
+        else
+        {
+            Banda banda = new Banda( pNombre, pCantidadDeFans, pCantidadDeCanciones, pCosto, pFecha, pRutaImagen );
+            if( primeraBanda == null )
+            {
+                primeraBanda = banda;
+            }
+            else
+            {
+                Banda actual = primeraBanda;
+                boolean agregada = false;
+                if( banda.compararPorHorarioPresentacion( primeraBanda ) == -1 )
+                {
+                    banda.cambiarSiguiente( primeraBanda );
+                    primeraBanda.cambiarAnterior( banda );
+                    primeraBanda = banda;
+                    agregada = true;
+                }
+               /* else if( banda.compararPorHorarioPresentacion( primeraBanda.darSiguiente( ) ) == -1 )
+                {
+                    banda.cambiarSiguiente( primeraBanda.darSiguiente( ) );
+                    primeraBanda.darSiguiente( ).cambiarAnterior( banda );
+                    primeraBanda = primeraBanda.darAnterior( );
+                    agregada = true;
+                }*/
+                else
+                {
+                    while( actual.darSiguiente( ) != null && !agregada )
+                    {
+                        Banda siguiente = actual.darSiguiente( );
+                        if( banda.compararPorHorarioPresentacion( siguiente ) == -1 )
+                        {
+                            Banda anterior = actual;
+                            anterior.cambiarSiguiente( banda );
+                            banda.cambiarSiguiente( siguiente );
+                            banda.cambiarAnterior( anterior );
+                            siguiente.cambiarAnterior( banda );
+                            agregada = true;
+                        }
+                        actual = siguiente;
+                    }
+                }
+
+                if( !agregada )
+                {
+                    if(banda.compararPorHorarioPresentacion( actual ) == -1)
+                    {
+                        banda.cambiarSiguiente( actual );
+                        banda.cambiarAnterior( actual.darAnterior( ) );
+                        actual.cambiarAnterior( banda );
+                    }
+                    else
+                    {
+                        actual.cambiarSiguiente( banda );
+                        banda.cambiarAnterior( actual );
+                    }
+                }
+            }
+        }
+        verificarInvariante( );
+    }
+
+    /**
+     * Elimina la banda con el nombre dado del escenario. <br>
+     * <b>pre:</b> La banda a eliminar existe. <br>
+     * <b>post:</b> Se eliminó la banda de la lista. <br>
+     * @param pNombre Nombre de la banda a eliminar. pNombre != null && pNombre != "".
+     * @throws Exception En caso de que se esté intentando eliminar la última banda restante en el escenario.
+     */
+    public void eliminarBanda( String pNombre ) throws Exception
+    {
+        Banda banda = buscarPorNombre( pNombre );
+        if( banda != null )
+        {
+            if( darCantidadBandas( ) == 1 )
+            {
+                throw new Exception( "No puede eliminarse esta banda pues es la última restante en el escenario." );
+            }
+
+            if( banda.compararPorNombre( primeraBanda ) == 0 )
+            {
+                primeraBanda = primeraBanda.darSiguiente( );
+                primeraBanda.cambiarAnterior( null );
+            }
+            else
+            {
+                Banda anterior = banda.darAnterior( );
+                Banda siguiente = banda.darSiguiente( );
+                if( anterior != null )
+                {
+                    anterior.cambiarSiguiente( siguiente );
+                }
+                if( siguiente != null )
+                {
+                    siguiente.cambiarAnterior( anterior );
+                }
+            }
+        }
+        verificarInvariante( );
+    }
+
+    /**
+     * Busca una banda por su nombre.
+     * @param pNombre Nombre de la banda buscada. pNombre != null && pNombre != "".
+     * @return Banda buscada, null si no hay ninguna banda con el nombre dado.
+     */
+    public Banda buscarPorNombre( String pNombre )
+    {
+        Banda buscada = null;
+        Banda actual = primeraBanda;
+        Banda comparacion = new Banda( pNombre, 10, 10, 10, new Date( ), "./data/imagenes/bandas/rock.png" );
+        while( actual != null && buscada == null )
+        {
+            if( actual.compararPorNombre( comparacion ) == 0 )
+            {
+                buscada = actual;
+            }
+            actual = actual.darSiguiente( );
+        }
+
+        return buscada;
+    }
+
+    /**
+     * Encuentra la banda que tiene el horario de presentación especificado por parámetro.
+     * @param pFecha Fecha y hora por la que se realizará la búsqueda. pFecha != null.
+     * @return La banda que tiene el horario de presentación especificado. Si ninguna banda satisface este horario, retorna null.
+     */
+    public Banda buscarPorHorario( Date pFecha )
+    {
+        Banda buscada = null;
+        Banda actual = primeraBanda;
+        Banda comparacion = new Banda( "Nombre", 10, 10, 10, pFecha, "./data/imagenes/bandas/rock.png" );
+        while( actual != null && buscada == null )
+        {
+            if( actual.compararPorHorarioPresentacion( comparacion ) == 0 )
+            {
+                buscada = actual;
+            }
+            actual = actual.darSiguiente( );
+        }
+
+        return buscada;
+    }
+
+    // -----------------------------------------------------------------
+    // Invariante
+    // -----------------------------------------------------------------
+
+    /**
+     * Verifica el invariante de la clase. <br>
+     * <b>inv </b> bandas != null. <br>
+     * <b>inv </b> No se supera la cantidad máxima de bandas. <br>
+     * <b>inv </b> No hay dos bandas con el mismo nombre. <br>
+     * <b>inv </b> No se sobrepasa el presupuesto del escenario. <br>
+     * <b>inv </b> Las bandas están ordenadas por su horario de presentación.
+     */
+    private void verificarInvariante( )
+    {
+        assert ( darCantidadBandas( ) <= CANTIDAD_MAXIMA_BANDAS ) : "Se sobrepasó el límite de bandas";
+        assert ( presupuesto >= 0 ) : "El presupuesto no puede ser un número menor a 0";
+        assert ( !buscarBandasConNombreRepetido( ) ) : "Hay dos bandas con el mismo nombre";
+        assert ( !sobrepasaPresupuesto( ) ) : "Se sobrepasó el presupuesto disponible";
+        assert ( bandasOrdenadas( ) ) : "Las bandas no se encuentran ordenadas por horario de presentación";
+    }
+
+    /**
+     * Verifica si hay dos bandas con el mismo nombre.
+     * @return True si hay dos bandas con el mismo nombre, false en caso contrario.
+     */
+    private boolean buscarBandasConNombreRepetido( )
+    {
+        boolean resultado = false;
+        Banda actual = primeraBanda;
+        while( actual != null && !resultado )
+        {
+            Banda segunda = actual.darSiguiente( );
+            while( segunda != null && !resultado )
+            {
+                if( actual.compararPorNombre( segunda ) == 0 )
+                {
+                    resultado = true;
+                }
+                segunda = segunda.darSiguiente( );
+            }
+            actual = actual.darSiguiente( );
+        }
+        return resultado;
+    }
+
+    /**
+     * Verifica si el costo de las bandas es mayor al presupuesto disponible
+     * @return True si se sobrepasó el presupuesto, false en caso contrario.
+     */
+    private boolean sobrepasaPresupuesto( )
+    {
+        double costoActual = 0;
+        boolean resultado = false;
+        Banda actual = primeraBanda;
+        while( actual != null && !resultado )
+        {
+            costoActual += actual.darCosto( );
+            if( costoActual > presupuesto )
+            {
+                resultado = true;
+            }
+            actual = actual.darSiguiente( );
+        }
+        return resultado;
+    }
+
+    /**
+     * Verifica si las bandas están ordenadas según su horario de presentación.
+     * @return True si se cumple el orden, false en caso contrario.
+     */
+    private boolean bandasOrdenadas( )
+    {
+        boolean resultado = true;
+        Banda actual = primeraBanda;
+        while( actual != null && resultado )
+        {
+            if( actual.darSiguiente( ) != null && actual.compararPorHorarioPresentacion( actual.darSiguiente( ) ) == 1 )
+            {
+                resultado = false;
+            }
+            actual = actual.darSiguiente( );
+        }
+        return resultado;
+    }
+}

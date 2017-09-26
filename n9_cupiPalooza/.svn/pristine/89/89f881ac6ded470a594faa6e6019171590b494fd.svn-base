@@ -1,0 +1,120 @@
+/**~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * Universidad de los Andes (Bogotá - Colombia)
+ * Departamento de Ingeniería de Sistemas y Computación 
+ * Licenciado bajo el esquema Academic Free License version 2.1 
+ *
+ * Proyecto Cupi2 (http://cupi2.uniandes.edu.co)
+ * Ejercicio: n9_cupiPalooza
+ * Autor: Equipo Cupi2 2017
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+ */
+package uniandes.cupi2.cupiPalooza.mundo;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+
+/**
+ * Esta excepción se lanza cuando se presenta un error al intentar agregar una banda o un escenario pues se ha excedido un límite establecido de capacidad. <br>
+ */
+@SuppressWarnings("serial")
+public class CupoMaximoException extends Exception
+{
+    // -----------------------------------------------------------------
+    // Constantes
+    // -----------------------------------------------------------------
+
+    /**
+     * Arreglo de constantes necesarios para el manejo del tipo de elemento.
+     */
+    public final static String[] ELEMENTOS = {"Festival", "Escenario"};
+
+    /**
+     * Arreglo de constantes necesarios para el manejo del tipo de límite alcanzado.
+     */
+    public final static String[] LIMITES = {"Presupuesto", "Cupos", "Horario No Disponible"};
+
+    // -----------------------------------------------------------------
+    // Atributos
+    // -----------------------------------------------------------------
+
+    /**
+     * Cadena de caracteres que se representa el elemento cuyo cupo se alcanzó. Esta es igual a TIPO_FESTIVAL o a TIPO_ESCENARIO.
+     */
+    private String tipoElemento;
+    
+    /**
+     * Cadena de caracteres que se representa el límite que se alcanzó. Esta es igual a LIMITE_CUPOS o a LIMITE_PRESUPUESTO.
+     */
+    private String tipoLimite;
+
+    // -----------------------------------------------------------------
+    // Constructor
+    // -----------------------------------------------------------------
+
+    /**
+     * Construye la excepción con el mensaje que se pasa como parámetro y que describe la causa del problema.
+     * @param pTipoElemento Cadena que representa el elemento cuyo cupo se alcanzó. pElemento == TIPO_FESTIVAL || pElemento == TIPO_ESCENARIO.
+     * @param pTipoLimite El límite alcanzado. pTipoLimite == LIMITE_PRESUPUESTO || pTipoLimite == LIMITE_CUPOS.
+     */
+    public CupoMaximoException( String pTipoElemento, String pTipoLimite )
+    {
+        super( generarMensaje( pTipoElemento, pTipoLimite ) );
+        tipoElemento = pTipoElemento;
+        tipoLimite = pTipoLimite;
+        escribirLog( );
+    }
+
+    /**
+     * Añade los detalles de la excepción al reporte.
+     */
+    public void escribirLog( )
+    {
+        try
+        {
+            PrintWriter out = new PrintWriter( new BufferedWriter( new FileWriter( "./data/reporteExcepciones.txt", true ) ) );
+            Date fecha = new Date( );
+            out.println( fecha.toString( ) + " - Cupo Máximo Excedido: " + tipoElemento + " por "  + tipoLimite);
+            out.close( );
+        }
+        catch( IOException e )
+        {
+
+        }
+    }
+
+    /**
+     * Crea el mensaje según el tipo de cupo alcanzado.
+     * @param pTipoElemento Elemento donde se alcanzó el cupo. pEntidad == TIPO_FESTIVAL || pEntidad == TIPO_ESCENARIO
+     * @param pTipoLimite El límite alcanzado. pTipoLimite == LIMITE_PRESUPUESTO || pTipoLimite == LIMITE_CUPOS
+     * @return El mensaje que debe mostrar la excepción.
+     */
+    public static String generarMensaje( String pTipoElemento, String pTipoLimite )
+    {
+        String mensaje = "";
+        if( pTipoElemento.equals( ELEMENTOS[0] ) )
+        {
+            mensaje = "Se ha alcanzado el límite de escenarios en el festival.";
+        }
+        else if( pTipoElemento.equals( ELEMENTOS[1] ) )
+        {
+            if( pTipoLimite.equals( LIMITES[1] ) )
+            {
+                mensaje = "Se ha alcanzado el límite de bandas para este escenario.";
+            }
+            else if( pTipoLimite.equals( LIMITES[0] ) )
+            {
+                mensaje = "El costo de la banda sobrepasa el presupuesto disponible para el escenario.";
+            }
+            else if( pTipoLimite.equals( LIMITES[2] ) )
+            {
+                mensaje = "El horario ya se encuentra ocupado por otra banda.";
+            }
+        }
+        
+        return mensaje;
+    }
+
+}
